@@ -2,6 +2,8 @@
 
 基于 tkinter + pynput 的 Windows 鼠标连点器。A Windows auto-clicker built with Python.
 
+简体中文 | [English](#english)
+
 ![Python](https://img.shields.io/badge/Python-3.8+-blue) ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey) ![License](https://img.shields.io/badge/License-Unlicense-green)
 
 ## 功能特性
@@ -56,3 +58,68 @@ RapidClick/
 ## 声明
 
 本工具仅供自动化测试、重复性操作辅助等合法用途，请勿用于违反游戏用户协议或法律法规的场景。
+
+---
+
+## English
+
+[简体中文](#rapidclick) | English
+
+A Windows mouse auto-clicker built with tkinter + pynput.
+
+### Features
+
+- **Global hotkey**: Start/stop anytime with F7, no need to focus the main window
+- **Left / right button**: Choose which mouse button to click
+- **Accurate intervals**: Scheduled on absolute `perf_counter` deadlines — no drift over time
+- **Thread-safe**: Hotkey events are handled via main-thread polling, avoiding cross-thread GUI access
+- **Clean shutdown**: Closing the window automatically stops the click thread and keyboard listener
+
+### Requirements
+
+- Windows
+- Python 3.8+
+
+### Install & Run
+
+```bash
+pip install pynput
+python main.py
+```
+
+### Usage
+
+1. Enter the click interval in milliseconds (min 1ms, default 100ms)
+2. Select the left or right mouse button
+3. Click "开始" (Start) or press **F7** to start clicking; click again or press F7 to stop
+4. The F7 hotkey keeps working even when other windows are focused
+
+### Click Interval Accuracy
+
+The click loop is scheduled on absolute deadlines: the target time of the n-th click is
+`start time + n × interval`, eliminating cumulative drift caused by `sleep` jitter and
+the click itself. Measured (1 second per run):
+
+| Set interval | Measured mean | Std dev | Clicks |
+|--------------|---------------|---------|--------|
+| 10ms         | 10.000ms      | 0.002ms | 101    |
+| 20ms         | 20.000ms      | 0.001ms | 51     |
+| 50ms         | 50.000ms      | 0.043ms | 21     |
+
+> The actual click rate is also limited by how fast the system processes mouse events.
+> When a single click takes longer than the set interval, the program realigns to the
+> current time and continues — no compensating burst of clicks.
+
+### Project Structure
+
+```
+RapidClick/
+├── main.py       # Entire implementation (GUI + click thread + hotkey listener)
+└── .gitignore
+```
+
+### Disclaimer
+
+This tool is intended for legitimate purposes such as automated testing and reducing
+repetitive strain. Do not use it in ways that violate game terms of service or applicable
+laws and regulations.
